@@ -1,7 +1,7 @@
 import pytest
 
-from sauron.users.models import User
-from sauron.users.tests.factories import UserFactory
+from sauron.apps.users.models import User
+from sauron.apps.users.tests import UserFactory
 
 
 @pytest.fixture(autouse=True)

@@ -16,6 +16,7 @@ if READ_DOT_ENV_FILE:
     # OS environment variables take precedence over variables from .env
     env.read_env(str(ROOT_DIR / ".env"))
 
+
 # GENERAL
 # -----------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
@@ -38,6 +39,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#locale-paths
 LOCALE_PATHS = [str(ROOT_DIR / "locale")]
 
+
 # DATABASES
 # -----------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
@@ -47,12 +49,14 @@ DATABASES["default"]["ATOMIC_REQUESTS"] = True
 # #std:setting-DEFAULT_AUTO_FIELD
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+
 # URLS
 # -----------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#root-urlconf
 ROOT_URLCONF = "config.urls"
 # https://docs.djangoproject.com/en/dev/ref/settings/#wsgi-application
 WSGI_APPLICATION = "config.wsgi.application"
+
 
 # APPS
 # -----------------------------------------------------------------------------
@@ -68,28 +72,30 @@ DJANGO_APPS = [
     "django.forms",
 ]
 THIRD_PARTY_APPS = [
-    "crispy_forms",
-    "crispy_bootstrap5",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
     "rest_framework",
     "rest_framework.authtoken",
+    "django_filters",
+    "dj_rest_auth.registration",
     "corsheaders",
     "drf_spectacular",
 ]
 
 LOCAL_APPS = [
-    "sauron.users",
+    "sauron.apps.users",
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
+
 # MIGRATIONS
 # -----------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#migration-modules
 MIGRATION_MODULES = {"sites": "sauron.contrib.sites.migrations"}
+
 
 # AUTHENTICATION
 # -----------------------------------------------------------------------------
@@ -103,12 +109,14 @@ AUTH_USER_MODEL = "users.User"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
 LOGIN_REDIRECT_URL = "users:redirect"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-url
-LOGIN_URL = "account_login"
+LOGIN_URL = "vue:account_login"
+
 
 # PASSWORDS
 # -----------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#password-hashers
 PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.ScryptPasswordHasher",
     "django.contrib.auth.hashers.Argon2PasswordHasher",
     "django.contrib.auth.hashers.PBKDF2PasswordHasher",
     "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
@@ -124,22 +132,21 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         "NAME": (
-            "django.contrib.auth.password_validation." "MinimumLengthValidator"
+            "django.contrib.auth.password_validation.MinimumLengthValidator"
         )
     },
     {
         "NAME": (
-            "django.contrib.auth.password_validation."
-            "CommonPasswordValidator"
+            "django.contrib.auth.password_validation.CommonPasswordValidator"
         )
     },
     {
         "NAME": (
-            "django.contrib.auth.password_validation."
-            "NumericPasswordValidator"
+            "django.contrib.auth.password_validation.NumericPasswordValidator"
         )
     },
 ]
+
 
 # MIDDLEWARE
 # -----------------------------------------------------------------------------
@@ -156,7 +163,9 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.common.BrokenLinkEmailsMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "sauron.utils.middleware.AppendSlash",
 ]
+
 
 # STATIC
 # -----------------------------------------------------------------------------
@@ -174,12 +183,14 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 ]
 
+
 # MEDIA
 # -----------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#media-root
 MEDIA_ROOT = str(APPS_DIR / "media")
 # https://docs.djangoproject.com/en/dev/ref/settings/#media-url
 MEDIA_URL = "/media/"
+
 
 # TEMPLATES
 # -----------------------------------------------------------------------------
@@ -205,7 +216,7 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                "sauron.users.context_processors.allauth_settings",
+                "sauron.apps.users.context_processors.allauth_settings",
             ],
         },
     }
@@ -214,15 +225,12 @@ TEMPLATES = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#form-renderer
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
-# http://django-crispy-forms.readthedocs.io/en/latest/install.html
-# #template-packs
-CRISPY_TEMPLATE_PACK = "bootstrap5"
-CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 # FIXTURES
 # -----------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#fixture-dirs
 FIXTURE_DIRS = (str(APPS_DIR / "fixtures"),)
+
 
 # SECURITY
 # -----------------------------------------------------------------------------
@@ -235,6 +243,7 @@ SECURE_BROWSER_XSS_FILTER = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#x-frame-options
 X_FRAME_OPTIONS = "DENY"
 
+
 # EMAIL
 # -----------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
@@ -245,6 +254,7 @@ EMAIL_BACKEND = env(
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-timeout
 EMAIL_TIMEOUT = 5
 
+
 # ADMIN
 # -----------------------------------------------------------------------------
 # Django Admin URL.
@@ -253,6 +263,7 @@ ADMIN_URL = "admin/"
 ADMINS = [("""Romain J.""", "romain@gnous.eu")]
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
+
 
 # LOGGING
 # -----------------------------------------------------------------------------
@@ -278,33 +289,41 @@ LOGGING = {
     "root": {"level": "INFO", "handlers": ["console"]},
 }
 
+
 # django-allauth
 # -----------------------------------------------------------------------------
 ACCOUNT_ALLOW_REGISTRATION = env.bool(
     "DJANGO_ACCOUNT_ALLOW_REGISTRATION", True
 )
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
-ACCOUNT_AUTHENTICATION_METHOD = "username"
+ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 ACCOUNT_EMAIL_REQUIRED = True
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
-ACCOUNT_ADAPTER = "sauron.users.adapters.AccountAdapter"
+ACCOUNT_ADAPTER = "sauron.apps.users.adapters.AccountAdapter"
 # https://django-allauth.readthedocs.io/en/latest/forms.html
-ACCOUNT_FORMS = {"signup": "sauron.users.forms.UserSignupForm"}
+ACCOUNT_FORMS = {"signup": "sauron.apps.users.forms.UserSignupForm"}
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
-SOCIALACCOUNT_ADAPTER = "sauron.users.adapters.SocialAccountAdapter"
+SOCIALACCOUNT_ADAPTER = "sauron.apps.users.apps.adapters.SocialAccountAdapter"
 # https://django-allauth.readthedocs.io/en/latest/forms.html
-SOCIALACCOUNT_FORMS = {"signup": "sauron.users.forms.UserSocialSignupForm"}
+SOCIALACCOUNT_FORMS = {
+    "signup": "sauron.apps.users.forms.UserSocialSignupForm"
+}
+
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True
+
+
 # django-compressor
 # -----------------------------------------------------------------------------
 # https://django-compressor.readthedocs.io/en/latest/quickstart/#installation
 INSTALLED_APPS += ["compressor"]
 STATICFILES_FINDERS += ["compressor.finders.CompressorFinder"]
+
+
 # django-rest-framework
 # -----------------------------------------------------------------------------
-# django-rest-framework
 # - https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -315,6 +334,9 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend"
+    ],
 }
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
@@ -337,5 +359,7 @@ SPECTACULAR_SETTINGS = {
         {"url": "https://gnous.eu", "description": "Production server"},
     ],
 }
+
+
 # Your stuff...
 # -----------------------------------------------------------------------------
