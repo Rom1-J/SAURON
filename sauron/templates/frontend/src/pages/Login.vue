@@ -6,8 +6,8 @@
       <div class="col-12 mt-5 xl:mt-0 text-center">
         <router-link :to="{name: 'landing'}"
                      class="hover:underline">
-          <img src="https://via.placeholder.com/100" alt="SAURON logo" class="mb-5"
-               height="60">
+          <img src="@/layout/images/logo.svg" alt="SAURON logo" class="mb-5"
+               height="64">
         </router-link>
       </div>
       <div class="col-12 xl:col-6"
@@ -119,12 +119,6 @@ export default {
 
       try {
         await this.LogIn(this.$data);
-        this.$toast.add({
-          severity: 'info',
-          summary: this.$t('status.loading.title'),
-          detail: this.$t('info.key_generation'),
-          life: 5000,
-        });
         await this.$router.push({ name: 'dashboard' });
       } catch (error) {
         const { response } = error;

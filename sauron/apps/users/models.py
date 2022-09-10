@@ -11,34 +11,18 @@ from sauron.utils.functions import PathAndRename
 
 
 class User(AbstractUser):
-    id = models.UUIDField(
-        _("Identification"),
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False,
-    )
-
-    def get_absolute_url(self):
-        """Get url for user's detail view.
-
-        Returns:
-            str: URL for user detail.
-
-        """
-        return reverse("users:detail", kwargs={"username": self.username})
-
-
-# =============================================================================
-
-
-class UserSettings(models.Model):
     class Theme(models.TextChoices):
         DARK = "DK", _("Dark")
         LIGHT = "LT", _("Light")
 
     # =========================================================================
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(
+        _("Identification"),
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+    )
 
     language = models.CharField(
         max_length=10,
@@ -54,14 +38,6 @@ class UserSettings(models.Model):
         upload_to=PathAndRename("users/avatar"), blank=True, null=True
     )
 
-    user = models.ForeignKey(
-        User,
-        on_delete=models.SET_NULL,
-        related_name="settings",
-        blank=True,
-        null=True,
-    )
-
     # =========================================================================
 
     def save(self, *args, **kwargs):
@@ -75,3 +51,12 @@ class UserSettings(models.Model):
 
                 img.thumbnail(output_size)
                 img.save(self.avatar.path)
+
+    def get_absolute_url(self):
+        """Get url for user's detail view.
+
+        Returns:
+            str: URL for user detail.
+
+        """
+        return reverse("users:detail", kwargs={"id": self.id})

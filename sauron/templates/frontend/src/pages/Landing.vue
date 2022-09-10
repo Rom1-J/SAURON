@@ -4,8 +4,8 @@
     align-items-center justify-content-between relative lg:static">
       <router-link to="/" class="flex align-items-center">
         <!--suppress CheckImageSize -->
-        <img src="https://via.placeholder.com/100"
-             alt="SAURON" height="36" class="mr-0 lg:mr-2">
+        <img src="@/layout/images/logo.svg"
+             alt="SAURON" height="42" class="mr-0 lg:mr-2">
       </router-link>
       <a class="cursor-pointer block lg:hidden text-500 p-ripple" v-ripple
          v-styleclass="{ selector: '@next', enterClass: 'hidden',
@@ -180,12 +180,12 @@
     <div class="py-4 px-4 mx-0 mt-8 lg:mx-8 border-gray-200 border-top-1"
          id="contact">
       <div class="grid justify-content-between">
-        <div class="col-12 md:col-2" style="margin-top:-1.5rem;">
+        <div class="col-12 md:col-2">
           <div
               class="flex flex-wrap align-items-center
               justify-content-center md:justify-content-start md:mb-0 mb-3">
-            <img src="https://via.placeholder.com/100"
-                 alt="SAURON" height="50" class="mr-2">
+            <img src="@/layout/images/logo-text.svg"
+                 alt="SAURON" height="128" class="mr-2">
           </div>
         </div>
 

@@ -3,6 +3,7 @@ from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpResponse
 from django.views.generic import View
 
+
 VUE_TEMPLATE_PATH = "sauron/templates/frontend"
 
 
@@ -66,6 +67,9 @@ class VueImgView(View):
         if local_path.exists() and local_path.is_file():
             if ext in ["svg", "png", "jpg", "jpeg"]:
                 content_type = f"image/{ext}"
+
+                if ext == "svg":
+                    content_type += "+xml"
 
                 return HttpResponse(
                     local_path.read_bytes(), content_type=content_type

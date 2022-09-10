@@ -9,6 +9,7 @@ from .views import (
     VueThemesView,
 )
 
+
 app_name = "vue"
 vue_template = TemplateView.as_view(template_name="frontend/dist/index.html")
 urlpatterns = [

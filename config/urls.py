@@ -8,7 +8,6 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 from sauron.apps.users.views import ConfirmEmailView
 
-
 # noinspection PyTypeChecker
 urlpatterns = [
     # Django Admin, use {% url 'admin:index' %}
@@ -67,7 +66,6 @@ if settings.DEBUG:
         urlpatterns = [
             path("__debug__/", include(debug_toolbar.urls))
         ] + urlpatterns
-
 
 urlpatterns += [
     path("", include("sauron.apps.vue.urls")),

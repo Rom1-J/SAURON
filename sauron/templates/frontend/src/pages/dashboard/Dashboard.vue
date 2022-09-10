@@ -21,9 +21,9 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import AppTopBar from './parts/AppTopbar.vue';
-import AppMenu from './parts/AppMenu.vue';
-import AppFooter from './parts/AppFooter.vue';
+import AppTopBar from './layout/AppTopbar.vue';
+import AppMenu from './layout/AppMenu.vue';
+import AppFooter from './layout/AppFooter.vue';
 
 export default {
   emits: ['change-theme'],

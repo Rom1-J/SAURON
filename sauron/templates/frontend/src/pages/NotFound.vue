@@ -3,8 +3,8 @@
   min-h-screen min-w-screen overflow-hidden">
     <div class="grid justify-content-center p-2 lg:p-0" style="min-width:80%">
       <div class="col-12 mt-5 xl:mt-0 text-center">
-        <img src="https://via.placeholder.com/100" alt="SAURON logo" class="mb-5"
-             height="60">
+        <img src="@/layout/images/logo.svg" alt="SAURON logo" class="mb-5"
+             height="64">
       </div>
       <div class="col-12 xl:col-6 customBorder">
         <div class="flex justify-content-center h-full w-full m-0 py-7 px-4 customBorder_filler">

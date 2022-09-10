@@ -11,4 +11,3 @@ class VueConfig(AppConfig):
             import sauron.apps.vue.signals  # noqa F401
         except ImportError:
             pass
-

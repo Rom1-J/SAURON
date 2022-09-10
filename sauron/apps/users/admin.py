@@ -3,20 +3,37 @@ from django.contrib.auth import admin as auth_admin
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
-from sauron.apps.users.forms import UserAdminChangeForm, UserAdminCreationForm
-
+from .forms import UserAdminChangeForm, UserAdminCreationForm
 
 User = get_user_model()
 
 
 @admin.register(User)
 class UserAdmin(auth_admin.UserAdmin):
-
     form = UserAdminChangeForm
     add_form = UserAdminCreationForm
     fieldsets = (
         (None, {"fields": ("username", "password")}),
-        (_("Personal info"), {"fields": ("name", "email")}),
+        (
+            _("Personal info"),
+            {
+                "fields": (
+                    "email",
+                    "first_name",
+                    "last_name",
+                )
+            },
+        ),
+        (
+            _("Settings"),
+            {
+                "fields": (
+                    "language",
+                    "theme",
+                    "avatar",
+                )
+            }
+        ),
         (
             _("Permissions"),
             {
@@ -31,5 +48,20 @@ class UserAdmin(auth_admin.UserAdmin):
         ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
-    list_display = ["username", "is_superuser"]
-    search_fields = ["name"]
+    list_display = [
+        "username",
+        "first_name",
+        "last_name",
+        "email",
+        "is_superuser",
+    ]
+    search_fields = [
+        "id",
+        "username",
+        "first_name",
+        "last_name",
+        "email",
+        "language",
+        "theme",
+        "avatar",
+    ]

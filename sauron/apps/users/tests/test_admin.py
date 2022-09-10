@@ -1,6 +1,9 @@
+import pytest
 from django.urls import reverse
 
 from sauron.apps.users.models import User
+
+pytestmark = pytest.mark.django_db
 
 
 class TestUserAdmin:
@@ -23,6 +26,7 @@ class TestUserAdmin:
             url,
             data={
                 "username": "test",
+                "email": "john@doe.fr",
                 "password1": "My_R@ndom-P@ssw0rd",
                 "password2": "My_R@ndom-P@ssw0rd",
             },
@@ -34,4 +38,5 @@ class TestUserAdmin:
         user = User.objects.get(username="admin")
         url = reverse("admin:users_user_change", kwargs={"object_id": user.pk})
         response = admin_client.get(url)
+
         assert response.status_code == 200

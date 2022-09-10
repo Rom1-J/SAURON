@@ -13,7 +13,7 @@
           <div
               class="flex align-items-center justify-content-center bg-blue-100 border-round"
               style="width:4.5rem;height:4.5rem">
-            <i class="pi pi-cloud-upload text-5xl text-blue-500"></i>
+            <i class="pi pi-users text-5xl text-blue-500"></i>
           </div>
         </div>
       </div>

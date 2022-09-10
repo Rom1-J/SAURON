@@ -14,4 +14,3 @@ class PathAndRename:
         filename = f"{{{uuid.uuid4()}}}.{{{ext}}}"
 
         return os.path.join(self.path, filename)
-

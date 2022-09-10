@@ -61,6 +61,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 # APPS
 # -----------------------------------------------------------------------------
 DJANGO_APPS = [
+    "jazzmin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -236,8 +237,6 @@ FIXTURE_DIRS = (str(APPS_DIR / "fixtures"),)
 # -----------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#session-cookie-httponly
 SESSION_COOKIE_HTTPONLY = True
-# https://docs.djangoproject.com/en/dev/ref/settings/#csrf-cookie-httponly
-CSRF_COOKIE_HTTPONLY = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#secure-browser-xss-filter
 SECURE_BROWSER_XSS_FILTER = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#x-frame-options
@@ -363,3 +362,11 @@ SPECTACULAR_SETTINGS = {
 
 # Your stuff...
 # -----------------------------------------------------------------------------
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:8080",
+]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    "http://127.0.0.1:8080",
+]
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:8080", "http://127.0.0.1:8000"]

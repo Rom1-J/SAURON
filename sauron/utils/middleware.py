@@ -9,4 +9,3 @@ class AppendSlash(MiddlewareMixin):
             return redirect(request.path + "/")
 
         return self.get_response(request)
-
