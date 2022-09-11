@@ -17,27 +17,17 @@
            v-if="mobileMenuActive"></div>
     </transition>
 
-    <div class="absolute bottom-0 right-0 mb-8">
-      <Button icon="pi pi-plus" class="p-button-rounded p-button-info m-4"
-              @click="addDialogOpened = true" />
-    </div>
+    <AddRelationDialog />
 
-    <Dialog :header="$t('misc.add_relation')" v-model:visible="addDialogOpened"
-            :style="{width: '80vw'}"
-            :modal="true">
-      <p class="line-height-3 m-0">
-        dzadza
-      </p>
-      <template #footer>
-        <Button label="Ok" @click="addDialogOpened = false" icon="pi pi-check"
-                class="p-button-outlined"/>
-      </template>
-    </Dialog>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
+
+// eslint-disable-next-line import/no-unresolved
+import AddRelationDialog from '@/components/AddRelation/Dialog.vue';
+
 import AppTopBar from './layout/AppTopbar.vue';
 import AppMenu from './layout/AppMenu.vue';
 import AppFooter from './layout/AppFooter.vue';
@@ -46,7 +36,6 @@ export default {
   emits: ['change-theme'],
   data() {
     return {
-      addDialogOpened: false,
       layoutMode: 'static',
       staticMenuInactive: false,
       overlayMenuActive: false,
@@ -131,6 +120,7 @@ export default {
     AppTopBar,
     AppMenu,
     AppFooter,
+    AddRelationDialog,
   },
 };
 </script>

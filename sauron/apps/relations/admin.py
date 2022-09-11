@@ -6,17 +6,6 @@ from .models import Attachment, Link, Relation, Tag
 
 @admin.register(Relation)
 class RelationAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
-    class TagInline(admin.TabularInline):  # type: ignore[type-arg]
-        model = Tag
-
-    class AttachmentInline(admin.TabularInline):  # type: ignore[type-arg]
-        model = Attachment
-
-    class LinkInline(admin.TabularInline):  # type: ignore[type-arg]
-        model = Link
-
-    inlines = [TagInline, AttachmentInline, LinkInline]
-
     fieldsets = (
         (None, {"fields": ("author",)}),
         (
@@ -26,6 +15,17 @@ class RelationAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
                     "first_name",
                     "last_name",
                     "relations",
+                    "nicknames",
+                )
+            },
+        ),
+        (
+            _("Extra"),
+            {
+                "fields": (
+                    "tags",
+                    "links",
+                    "attachments",
                 )
             },
         ),
@@ -66,6 +66,7 @@ class TagAdmin(admin.ModelAdmin):  # type: ignore[type-arg]
     list_display = [
         "name",
         "author",
+        "colored_name",
     ]
     search_fields = [
         "id",

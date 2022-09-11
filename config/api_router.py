@@ -1,7 +1,7 @@
 from django.conf import settings
 from rest_framework.routers import DefaultRouter, SimpleRouter
 
-from sauron.apps.relations.api.views import RelationViewSet
+from sauron.apps.relations.api.views import RelationViewSet, TagViewSet
 from sauron.apps.users.api.views import UserViewSet
 
 
@@ -12,6 +12,7 @@ if settings.DEBUG:
 
 router.register("users", UserViewSet)
 router.register("relations", RelationViewSet)
+router.register("tags", TagViewSet)
 
 
 app_name = "api"

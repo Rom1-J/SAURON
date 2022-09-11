@@ -1,13 +1,13 @@
 from rest_framework import serializers
 
-from ..models import Relation
+from ..models import Relation, Tag
 
 
 class RelationSerializer(serializers.ModelSerializer[Relation]):
     class Meta:
         model = Relation
         fields = [
-            "author",
+            "id" "author",
             "first_name",
             "last_name",
             "relations",
@@ -15,4 +15,11 @@ class RelationSerializer(serializers.ModelSerializer[Relation]):
             "attachments",
             "links",
         ]
-        read_only_fields = ["author"]
+        read_only_fields = ["id", "author"]
+
+
+class TagSerializer(serializers.ModelSerializer[Tag]):
+    class Meta:
+        model = Tag
+        fields = ["id", "note", "name", "color"]
+        read_only_fields = ["id"]

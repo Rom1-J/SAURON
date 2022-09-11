@@ -12,8 +12,8 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from ..models import Relation
-from .serializers import RelationSerializer
+from ..models import Relation, Tag
+from .serializers import RelationSerializer, TagSerializer
 
 
 class RelationViewSet(
@@ -25,6 +25,41 @@ class RelationViewSet(
     lookup_field = "id"
 
     def get_queryset(self) -> models.QuerySet[Relation]:
+        assert isinstance(self.request.user.id, uuid.UUID)
+        return self.queryset.filter(author=self.request.user)
+
+    def perform_create(  # type: ignore[override]
+        self, serializer: RelationSerializer
+    ) -> None:
+        print("perform_create")
+
+    def create(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        print("create")
+
+        return Response()
+
+    # =========================================================================
+
+    def retrieve(
+        self, request: Request, *args: Any, **kwargs: Any
+    ) -> Response:
+        print("retrieve")
+
+        return Response()
+
+
+# =============================================================================
+
+
+class TagViewSet(
+    RetrieveModelMixin, ListModelMixin, CreateModelMixin, GenericViewSet
+):
+    serializer_class = TagSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Tag.objects.all()
+    lookup_field = "id"
+
+    def get_queryset(self) -> models.QuerySet[Tag]:
         assert isinstance(self.request.user.id, uuid.UUID)
         return self.queryset.filter(author=self.request.user)
 
