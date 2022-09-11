@@ -1,11 +1,17 @@
+import typing
+
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-User = get_user_model()
+
+if typing.TYPE_CHECKING:
+    from sauron.apps.users.models import User
+else:
+    User = get_user_model()
 
 
-class UserSerializer(serializers.ModelSerializer):
-    url = serializers.StringRelatedField(
+class UserSerializer(serializers.ModelSerializer["User"]):
+    url = serializers.StringRelatedField(  # type: ignore[var-annotated]
         source="get_absolute_url", read_only=True
     )
 

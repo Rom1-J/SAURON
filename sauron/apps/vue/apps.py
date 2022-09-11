@@ -6,7 +6,7 @@ class VueConfig(AppConfig):
     name = "sauron.apps.vue"
     verbose_name = _("Vue")
 
-    def ready(self):
+    def ready(self) -> None:
         try:
             import sauron.apps.vue.signals  # noqa F401
         except ImportError:

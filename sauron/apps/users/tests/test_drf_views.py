@@ -4,11 +4,12 @@ from rest_framework.test import APIRequestFactory
 from sauron.apps.users.api.views import UserViewSet
 from sauron.apps.users.models import User
 
+
 pytestmark = pytest.mark.django_db
 
 
 class TestUserViewSet:
-    def test_get_queryset(self, user: User, arf: APIRequestFactory):
+    def test_get_queryset(self, user: User, arf: APIRequestFactory) -> None:
         view = UserViewSet()
         request = arf.get("/fake-url/")
         request.user = user
@@ -17,14 +18,14 @@ class TestUserViewSet:
 
         assert user in view.get_queryset()
 
-    def test_me(self, user: User, arf: APIRequestFactory):
+    def test_me(self, user: User, arf: APIRequestFactory) -> None:
         view = UserViewSet()
         request = arf.get("/fake-url/")
         request.user = user
 
         view.request = request
 
-        response = view.me(request)
+        response = view.me(request)  # type: ignore[call-arg]
 
         assert response.data == {
             "username": user.username,

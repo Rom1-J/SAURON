@@ -17,17 +17,14 @@ export default {
 
       await commit(
         'setUser',
-        {
-          ...(await axios.get(
-            '/api/users/me/',
-            {
-              headers: {
-                Authorization: `token ${getters.StateKey}`,
-              },
+        (await axios.get(
+          '/api/users/me/',
+          {
+            headers: {
+              Authorization: `token ${getters.StateKey}`,
             },
-          )).data,
-          password: form.password,
-        },
+          },
+        )).data,
       );
     },
 
@@ -40,6 +37,9 @@ export default {
       const data = {
         first_name: form.firstName,
         last_name: form.lastName,
+        language: form.language,
+        theme: form.theme.code,
+        avatar: form.avatar,
       };
 
       await axios.patch('/api/accounts/user/', data);

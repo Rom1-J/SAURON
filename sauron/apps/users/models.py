@@ -1,3 +1,4 @@
+import typing
 import uuid
 
 from django.conf import settings
@@ -40,7 +41,7 @@ class User(AbstractUser):
 
     # =========================================================================
 
-    def save(self, *args, **kwargs):
+    def save(self, *args: typing.Any, **kwargs: typing.Any) -> None:
         super().save(*args, **kwargs)
 
         if self.avatar:
@@ -52,7 +53,10 @@ class User(AbstractUser):
                 img.thumbnail(output_size)
                 img.save(self.avatar.path)
 
-    def get_absolute_url(self):
+    # =========================================================================
+    # =========================================================================
+
+    def get_absolute_url(self) -> str:
         """Get url for user's detail view.
 
         Returns:
@@ -60,3 +64,5 @@ class User(AbstractUser):
 
         """
         return reverse("users:detail", kwargs={"id": self.id})
+
+    # =========================================================================

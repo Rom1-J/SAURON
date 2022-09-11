@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 from .forms import UserAdminChangeForm, UserAdminCreationForm
 
+
 User = get_user_model()
 
 
@@ -32,7 +33,7 @@ class UserAdmin(auth_admin.UserAdmin):
                     "theme",
                     "avatar",
                 )
-            }
+            },
         ),
         (
             _("Permissions"),

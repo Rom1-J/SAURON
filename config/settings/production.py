@@ -1,4 +1,5 @@
 import logging
+import typing
 
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -103,7 +104,7 @@ INSTALLED_APPS += ["anymail"]  # noqa F405
 # #anymail-settings-reference
 # https://anymail.readthedocs.io/en/stable/esps
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-ANYMAIL = {}
+ANYMAIL: dict[str, typing.Any] = {}
 
 # django-compressor
 # -----------------------------------------------------------------------------

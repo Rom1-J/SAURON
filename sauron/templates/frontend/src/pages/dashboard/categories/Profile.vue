@@ -2,16 +2,18 @@
   <div class="grid">
     <div class="col-12">
       <div class="card">
-        <h5>{{ StateUser.username }}</h5>
+        <div class="grid">
+          <div class="col-6 mb-4">
+            <span class="text-2xl mr-1">{{ StateUser.username }}</span>
+            <i class="text-sm">({{ StateUser.email }})</i>
+          </div>
+          <div class="col-6 text-right">
+            <img src="https://via.placeholder.com/32" alt="Avatar">
+          </div>
+        </div>
         <form @submit.prevent="handleSubmit(!v$.$invalid)"
               class="p-fluid formgrid grid">
-          <div class="field col-12 md:col-4">
-            <label for="username">
-              {{ $t('fields.username') }}
-            </label>
-            <InputText v-model="username" id="username" disabled type="text"/>
-          </div>
-          <div class="field col-12 md:col-4">
+          <div class="field col-12 md:col-6">
             <label for="firstname"
                    :class="{'p-error':v$.firstName.$invalid && submitted}">
               {{ $t('fields.firstname') }}
@@ -24,7 +26,7 @@
               {{ v$.firstName.alpha.$message }}
             </small>
           </div>
-          <div class="field col-12 md:col-4">
+          <div class="field col-12 md:col-6">
             <label for="lastname"
                    :class="{'p-error':v$.lastName.$invalid && submitted}">
               {{ $t('fields.lastname') }}
@@ -37,11 +39,29 @@
               {{ v$.lastName.alpha.$message }}
             </small>
           </div>
-          <div class="field col-12">
-            <label for="email">
-              {{ $t('fields.email') }}
+          <div class="field col-12 md:col-4">
+            <label for="language">
+              {{ $t('fields.language') }}
             </label>
-            <InputText v-model="email" id="email" disabled type="email"/>
+            <Dropdown v-model="language" :options="languageOptions"
+                      optionLabel="name" id="language"/>
+          </div>
+
+          <div class="field col-12 md:col-4">
+            <label for="theme">
+              {{ $t('fields.theme.title') }}
+            </label>
+            <Dropdown v-model="theme" :options="themeOptions"
+                      optionLabel="name" id="theme"/>
+          </div>
+
+          <div class="field col-12 md:col-4">
+            <label for="avatar">
+              {{ $t('fields.avatar') }}
+            </label>
+            <FileUpload mode="basic" v-model="avatar" class="w-full"
+                        :choose-label="$t('fields.choose')"
+                        name="avatar" accept="image/*" :maxFileSize="1000000"/>
           </div>
 
           <div class="field col-12 mt-5">
@@ -64,12 +84,19 @@ export default {
   },
   data() {
     return {
-      username: '',
       firstName: '',
       lastName: '',
-      email: '',
-      friendCode: '',
-      publicKey: '',
+      language: '',
+      languageOptions: [
+        { name: 'Francais', code: 'FR' },
+        { name: 'English', code: 'EN' },
+      ],
+      theme: '',
+      themeOptions: [
+        { name: this.$t('fields.theme.dark'), code: 'DK' },
+        { name: this.$t('fields.theme.light'), code: 'LT' },
+      ],
+      avatar: '',
       submitted: false,
     };
   },
@@ -100,7 +127,6 @@ export default {
           detail: this.$t('status.saved.message'),
           life: 5000,
         });
-        this.$router.push({ name: 'login' });
       } catch (error) {
         const { response } = error;
 
@@ -125,9 +151,11 @@ export default {
   },
   created() {
     this.username = this.StateUser.username;
+    this.email = this.StateUser.email;
     this.firstName = this.StateUser.first_name;
     this.lastName = this.StateUser.last_name;
-    this.email = this.StateUser.email;
+    this.language = this.StateUser.language;
+    this.theme = this.StateUser.theme;
   },
 };
 </script>

@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.messages.middleware import MessageMiddleware
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.http import HttpRequest, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.test import RequestFactory
 from django.urls import reverse
 
@@ -16,6 +16,7 @@ from sauron.apps.users.views import (
     UserRedirectView,
     UserUpdateView,
 )
+
 
 pytestmark = pytest.mark.django_db
 
@@ -29,10 +30,10 @@ class TestUserUpdateView:
         https://github.com/pytest-dev/pytest-django/pull/258
     """
 
-    def dummy_get_response(self, request: HttpRequest):
-        return None
+    def dummy_get_response(self, request: HttpRequest) -> HttpResponse:
+        return HttpResponse(request.body)
 
-    def test_get_success_url(self, user: User, rf: RequestFactory):
+    def test_get_success_url(self, user: User, rf: RequestFactory) -> None:
         view = UserUpdateView()
         request = rf.get("/fake-url/")
         request.user = user
@@ -41,7 +42,7 @@ class TestUserUpdateView:
 
         assert view.get_success_url() == f"/api/users/{user.id}/"
 
-    def test_get_object(self, user: User, rf: RequestFactory):
+    def test_get_object(self, user: User, rf: RequestFactory) -> None:
         view = UserUpdateView()
         request = rf.get("/fake-url/")
         request.user = user
@@ -50,7 +51,7 @@ class TestUserUpdateView:
 
         assert view.get_object() == user
 
-    def test_form_valid(self, user: User, rf: RequestFactory):
+    def test_form_valid(self, user: User, rf: RequestFactory) -> None:
         view = UserUpdateView()
         request = rf.get("/fake-url/")
 
@@ -71,7 +72,7 @@ class TestUserUpdateView:
 
 
 class TestUserRedirectView:
-    def test_get_redirect_url(self, user: User, rf: RequestFactory):
+    def test_get_redirect_url(self, user: User, rf: RequestFactory) -> None:
         view = UserRedirectView()
         request = rf.get("/fake-url")
         request.user = user
@@ -82,7 +83,7 @@ class TestUserRedirectView:
 
 
 class TestUserDetailView:
-    def test_authenticated(self, user: User, rf: RequestFactory):
+    def test_authenticated(self, user: User, rf: RequestFactory) -> None:
         request = rf.get("/fake-url/")
         request.user = UserFactory()
 
@@ -90,7 +91,7 @@ class TestUserDetailView:
 
         assert response.status_code == 200
 
-    def test_not_authenticated(self, user: User, rf: RequestFactory):
+    def test_not_authenticated(self, user: User, rf: RequestFactory) -> None:
         request = rf.get("/fake-url/")
         request.user = AnonymousUser()
 

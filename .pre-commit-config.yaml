@@ -29,29 +29,27 @@ repos:
     rev: 'tags/v0.971'
     hooks:
       - id: mypy
+        entry: bash -c 'DATABASE_URL=sqlite:sauron.sqlite mypy "$@"' --
         args: [ "--strict", "--namespace-packages", "--ignore-missing-imports", "--show-error-codes" ]
         additional_dependencies:
           - django-stubs
+          - djangorestframework-stubs
           - django-environ
+          - django-jazzmin
+          - django-allauth
+          - djangorestframework
+          - django_filter
+          - dj-rest-auth[with_social]
+          - django-cors-headers
+          - drf-spectacular
+          - django-compressor
+          - Pillow
 
   - repo: https://github.com/PyCQA/flake8
     rev: 5.0.4
     hooks:
       - id: flake8
         additional_dependencies: [ flake8-isort ]
-
-  - repo: local
-    hooks:
-      - id: pylint
-        name: pylint
-        entry: pylint
-        language: system
-        types: [ python ]
-        args:
-          [
-          "-rn", # Only display messages
-          "-sn", # Don't display the score
-          ]
 
 # sets up .pre-commit-ci.yaml to ensure pre-commit dependencies stay up to date
 ci:

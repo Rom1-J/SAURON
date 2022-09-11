@@ -10,7 +10,7 @@ VUE_TEMPLATE_PATH = "sauron/templates/frontend"
 class VueCSSView(View):
     template_name = "dist/css/"
 
-    def get(self, request: WSGIRequest, path=""):
+    def get(self, request: WSGIRequest, path: str = "") -> HttpResponse:
         file_path = settings.ROOT_DIR / VUE_TEMPLATE_PATH / self.template_name
 
         local_path = file_path / path
@@ -26,7 +26,7 @@ class VueCSSView(View):
 class VueThemesView(View):
     template_name = "dist/themes/"
 
-    def get(self, request: WSGIRequest, path=""):
+    def get(self, request: WSGIRequest, path: str = "") -> HttpResponse:
         file_path = settings.ROOT_DIR / VUE_TEMPLATE_PATH / self.template_name
 
         local_path = file_path / path
@@ -42,7 +42,7 @@ class VueThemesView(View):
 class VueJSView(View):
     template_name = "dist/js/"
 
-    def get(self, request: WSGIRequest, path=""):
+    def get(self, request: WSGIRequest, path: str = "") -> HttpResponse:
         file_path = settings.ROOT_DIR / VUE_TEMPLATE_PATH / self.template_name
 
         local_path = file_path / path
@@ -58,7 +58,7 @@ class VueJSView(View):
 class VueImgView(View):
     template_name = "dist/img/"
 
-    def get(self, request: WSGIRequest, path=""):
+    def get(self, request: WSGIRequest, path: str = "") -> HttpResponse:
         file_path = settings.ROOT_DIR / VUE_TEMPLATE_PATH / self.template_name
 
         local_path = file_path / path
@@ -81,7 +81,7 @@ class VueImgView(View):
 class VueFontsView(View):
     template_name = "dist/fonts/"
 
-    def get(self, request: WSGIRequest, path=""):
+    def get(self, request: WSGIRequest, path: str = "") -> HttpResponse:
         file_path = settings.ROOT_DIR / VUE_TEMPLATE_PATH / self.template_name
 
         local_path = file_path / path
