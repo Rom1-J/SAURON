@@ -45,6 +45,24 @@ export default {
       await axios.patch('/api/accounts/user/', data);
       await commit('setUser', { ...getters.StateUser, ...data });
     },
+
+    async CreateRelation({ commit, getters }, form) {
+      const data = {
+        first_name: form.firstName,
+        last_name: form.lastName,
+        note: form.note,
+      };
+      const extra = {
+        tags: form.tags,
+        links: form.links,
+        files: form.files,
+      };
+
+      console.log(commit, getters);
+
+      console.log(data);
+      console.log(extra);
+    },
   },
   mutations: {
     setKey(state, key) {

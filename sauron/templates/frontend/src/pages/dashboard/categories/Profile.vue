@@ -76,7 +76,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import { useVuelidate } from '@vuelidate/core';
-import { alpha } from '@vuelidate/validators';
+import { alpha, required } from '@vuelidate/validators';
 
 export default {
   setup() {
@@ -103,9 +103,11 @@ export default {
   validations() {
     return {
       firstName: {
+        required,
         alpha,
       },
       lastName: {
+        required,
         alpha,
       },
     };

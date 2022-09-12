@@ -7,7 +7,8 @@ class RelationSerializer(serializers.ModelSerializer[Relation]):
     class Meta:
         model = Relation
         fields = [
-            "id" "author",
+            "id",
+            "author",
             "first_name",
             "last_name",
             "relations",
