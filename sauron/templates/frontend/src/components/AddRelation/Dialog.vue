@@ -1,57 +1,43 @@
-<template>
-  <div class="absolute bottom-0 right-0 mb-8">
-    <Button icon="pi pi-plus" class="p-button-rounded p-button-info m-4"
-            @click="addDialogOpened = true"/>
-  </div>
-
-  <Dialog :header="$t('misc.add_relation')" v-model:visible="addDialogOpened"
-          class="h-full w-full m-5"
-          :modal="true" content-class="flex-1">
-    <form class="p-fluid formgrid grid">
-
-    </form>
-    <template #footer>
-    </template>
-  </Dialog>
-
-  <TagEdit v-if="tagEditDialogOpened"/>
-</template>
-
-<script>
-import { mapActions, mapGetters } from 'vuex';
-
+<script lang="ts" setup>
 // eslint-disable-next-line import/no-unresolved
 import TagEdit from '@/components/TagEdit.vue';
+import { useTagStore } from '@/stores';
+import { ref } from 'vue';
+import { Tag } from '@/models/tag.model';
 
-export default {
-  components: {
-    TagEdit,
-  },
+const tagStore = useTagStore();
 
-  data() {
-    return {
-      addDialogOpened: true,
-      tagEditDialogOpened: true,
-      form: {
-        firstName: '',
-        lastName: '',
-        tags: [],
-        links: [],
-        note: '',
-        nicknames: '',
-      },
-      tags: [],
-    };
-  },
-  computed: {
-    ...mapGetters(['StateTags']),
-  },
-  methods: {
-    ...mapActions(['GetTags', 'CreateRelation']),
-  },
-  async created() {
-    if (this.StateTags.length === 0) await this.GetTags();
-    this.tags = this.StateTags;
-  },
+const addDialogOpened = ref(false);
+const tagEditDialogOpened = ref(false);
+
+let tags: Tag[] = [];
+console.log(tags);
+
+const init = async () => {
+  if (tagStore.tags.length === 0) await tagStore.GetTags();
+  tags = tagStore.tags;
 };
+
+init();
 </script>
+
+<template>
+  <div class="absolute bottom-0 right-0 mb-8">
+    <Button
+      icon="pi pi-plus"
+      class="p-button-rounded p-button-info m-4"
+      @click="addDialogOpened = true" />
+  </div>
+
+  <Dialog
+    :header="$t('misc.add_relation')"
+    v-model:visible="addDialogOpened"
+    class="h-full w-full m-5"
+    :modal="true"
+    content-class="flex-1">
+    <form class="p-fluid formgrid grid" />
+    <template #footer />
+  </Dialog>
+
+  <TagEdit v-if="tagEditDialogOpened" />
+</template>

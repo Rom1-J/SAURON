@@ -1,8 +1,4 @@
 <template>
-  <router-view></router-view>
-  <Toast/>
+  <router-view />
+  <Toast />
 </template>
-
-<script>
-export default {};
-</script>

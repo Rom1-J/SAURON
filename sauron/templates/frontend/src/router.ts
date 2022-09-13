@@ -1,21 +1,21 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import store from './store';
+import { useUserStore } from '@/stores';
 
 const routes = [
   {
     path: '/',
     name: 'landing',
-    component: () => import('./pages/Landing.vue'),
+    component: () => import('./views/LandingView.vue'),
   },
   {
     path: '/dashboard',
     name: 'home',
-    component: () => import('./pages/dashboard/Dashboard.vue'),
+    component: () => import('./views/dashboard/DashboardView.vue'),
     children: [
       {
         path: '/dashboard',
         name: 'dashboard',
-        component: () => import('./pages/dashboard/categories/Home.vue'),
+        component: () => import('./views/dashboard/categories/Home.vue'),
         meta: {
           requires_auth: true,
         },
@@ -23,7 +23,7 @@ const routes = [
       {
         path: '/dashboard/profile',
         name: 'profile',
-        component: () => import('./pages/dashboard/categories/Profile.vue'),
+        component: () => import('./views/dashboard/categories/Profile.vue'),
         meta: {
           requires_auth: true,
         },
@@ -36,7 +36,7 @@ const routes = [
   {
     path: '/register',
     name: 'register',
-    component: () => import('./pages/Register.vue'),
+    component: () => import('./views/RegisterView.vue'),
     meta: {
       requires_guest: true,
     },
@@ -44,7 +44,7 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: () => import('./pages/Login.vue'),
+    component: () => import('./views/LoginView.vue'),
     meta: {
       requires_guest: true,
     },
@@ -52,7 +52,7 @@ const routes = [
   {
     path: '/:pathMatch(.*)*',
     name: 'notFound',
-    component: () => import('./pages/NotFound.vue'),
+    component: () => import('./views/NotFoundView.vue'),
   },
 ];
 
@@ -62,12 +62,14 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  const user = useUserStore();
+
   if (to.matched.some((record) => record.meta.requires_auth)) {
-    if (!store.getters.isAuthenticated) {
+    if (!user.isAuthenticated) {
       return next({ name: 'login' });
     }
   } else if (to.matched.some((record) => record.meta.requires_guest)) {
-    if (store.getters.isAuthenticated) {
+    if (user.isAuthenticated) {
       return next({ name: 'dashboard' });
     }
   }

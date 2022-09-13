@@ -90,9 +90,10 @@ import TreeSelect from 'primevue/treeselect';
 import TreeTable from 'primevue/treetable';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
 import axios from 'axios';
+import { createPinia } from 'pinia';
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 import App from './App.vue';
 import router from './router';
-import store from './store';
 import i18n from './i18n';
 
 router.beforeEach((to, from, next) => {
@@ -111,7 +112,7 @@ app.use(PrimeVue, { ripple: true, inputStyle: 'outlined' });
 app.use(ConfirmationService);
 app.use(ToastService);
 app.use(router);
-app.use(store);
+app.use(createPinia().use(piniaPluginPersistedstate));
 app.use(i18n);
 
 app.directive('tooltip', Tooltip);

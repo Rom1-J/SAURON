@@ -7,6 +7,7 @@ const messages = {
 
 const index = createI18n({
   locale: 'en',
+  legacy: false,
   messages,
 });
 
