@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useVuelidate } from '@vuelidate/core';
-import { alpha, required } from '@vuelidate/validators';
+import { maxLength } from '@vuelidate/validators';
 import { reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
@@ -13,10 +13,11 @@ const toast = useToast();
 const { t } = useI18n();
 
 const submitted = ref(false);
+const avatarUrl = ref(userStore.user?.avatar);
 
 const languageOptions = [
-  { name: 'Francais', code: 'FR' },
-  { name: 'English', code: 'EN' },
+  { name: 'Francais', code: 'fr' },
+  { name: 'English', code: 'en' },
 ];
 const themeOptions = [
   { name: t('fields.theme.dark'), code: 'DK' },
@@ -28,17 +29,15 @@ const state = reactive({
   lastName: userStore.user?.lastName,
   language: userStore.user?.language,
   theme: userStore.user?.theme,
-  avatar: userStore.user?.avatar,
+  avatar: '',
 });
 
 const rules = {
   firstName: {
-    required,
-    alpha,
+    maxLengthValue: maxLength(150),
   },
   lastName: {
-    required,
-    alpha,
+    maxLengthValue: maxLength(150),
   },
 };
 
@@ -56,6 +55,7 @@ async function handleSubmit(isFormValid: boolean) {
       detail: t('status.saved.message'),
       life: 5000,
     });
+    state.avatar = '';
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const serverError = error as AxiosError<ServerError>;
@@ -79,6 +79,17 @@ async function handleSubmit(isFormValid: boolean) {
 
   submitted.value = false;
 }
+
+type UploaderEvent = {
+  files: File[]
+};
+function uploader(event: UploaderEvent) {
+  const file = event.files[0];
+
+  // @ts-ignore
+  state.avatar = new File([file], file.name);
+  avatarUrl.value = URL.createObjectURL(file);
+}
 </script>
 
 <template>
@@ -87,11 +98,16 @@ async function handleSubmit(isFormValid: boolean) {
       <div class="card">
         <div class="grid">
           <div class="col-6 mb-4">
-            <span class="text-2xl mr-1">{{ userStore.user.username }}</span>
-            <i class="text-sm">({{ userStore.user.email }})</i>
+            <span class="text-2xl mr-1">{{ userStore.user?.username }}</span>
+            <i class="text-sm">({{ userStore.user?.email }})</i>
           </div>
-          <div class="col-6 text-right">
-            <img src="https://via.placeholder.com/32" alt="Avatar">
+          <div class="col-6 flex justify-content-end">
+            <AvatarGroup v-if="state.avatar">
+              <Avatar :image="userStore.user?.avatar" shape="circle" />
+              <Avatar v-if="avatarUrl" :image="avatarUrl" shape="circle" size="large" />
+            </AvatarGroup>
+
+            <Avatar v-else-if="avatarUrl" :image="avatarUrl" size="large" shape="circle" />
           </div>
         </div>
         <form
@@ -112,7 +128,7 @@ async function handleSubmit(isFormValid: boolean) {
               v-if="(v$.firstName.$invalid && v$.firstName.$model)
                 || v$.firstName.$pending.$response"
               class="p-error">
-              {{ v$.firstName.alpha.$message }}
+              {{ v$.firstName.maxLengthValue.$message }}
             </small>
           </div>
           <div class="field col-12 md:col-6">
@@ -130,7 +146,7 @@ async function handleSubmit(isFormValid: boolean) {
               v-if="(v$.lastName.$invalid && v$.lastName.$model)
                 || v$.lastName.$pending.$response"
               class="p-error">
-              {{ v$.lastName.alpha.$message }}
+              {{ v$.lastName.maxLengthValue.$message }}
             </small>
           </div>
           <div class="field col-12 md:col-4">
@@ -141,6 +157,7 @@ async function handleSubmit(isFormValid: boolean) {
               v-model="state.language"
               :options="languageOptions"
               optionLabel="name"
+              option-value="code"
               id="language" />
           </div>
 
@@ -152,6 +169,7 @@ async function handleSubmit(isFormValid: boolean) {
               v-model="state.theme"
               :options="themeOptions"
               optionLabel="name"
+              option-value="code"
               id="theme" />
           </div>
 
@@ -161,11 +179,14 @@ async function handleSubmit(isFormValid: boolean) {
             </label>
             <FileUpload
               mode="basic"
-              v-model="avatar"
+              v-model="state.avatar"
               class="w-full"
               :choose-label="$t('fields.choose')"
               name="avatar"
               accept="image/*"
+              custom-upload
+              @uploader="uploader"
+              auto
               :maxFileSize="1000000" />
           </div>
 

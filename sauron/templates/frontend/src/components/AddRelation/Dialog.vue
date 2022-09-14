@@ -22,7 +22,7 @@ init();
 </script>
 
 <template>
-  <div class="absolute bottom-0 right-0 mb-8">
+  <div class="fixed bottom-0 right-0 mb-8">
     <Button
       icon="pi pi-plus"
       class="p-button-rounded p-button-info m-4"

@@ -19,3 +19,11 @@ export type UserAPIResponse = {
   url: string,
   username: string,
 };
+
+export type UserUpdateForm = {
+  first_name?: string
+  last_name?: string
+  language?: string
+  theme?: string
+  avatar?: Blob
+};

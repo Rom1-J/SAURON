@@ -1,7 +1,9 @@
 import { User } from '@/models/user.model';
 import { defineStore } from 'pinia';
 import axios from 'axios';
-import { UserAPIResponse, UserLoginForm, UserRegisterForm } from '@/types/user';
+import {
+  UserAPIResponse, UserLoginForm, UserRegisterForm, UserUpdateForm,
+} from '@/types/user';
 
 interface State {
   key: string | null,
@@ -28,16 +30,7 @@ const useUserStore = defineStore({
       const req = await axios.post('/api/accounts/login/', form);
       this.setKey(req.data.key);
 
-      this.setUser(
-        (await axios.get(
-          '/api/users/me/',
-          {
-            headers: {
-              Authorization: `token ${this.key}`,
-            },
-          },
-        )).data,
-      );
+      await this.GetUser();
     },
 
     async LogOut() {
@@ -45,16 +38,31 @@ const useUserStore = defineStore({
       this.$reset();
     },
 
+    async GetUser() {
+      this.setUser((await axios.get('/api/users/me/')).data);
+    },
+
     async UpdateUser(form: User) {
-      const data = {
+      const data: UserUpdateForm = {
         first_name: form.firstName,
         last_name: form.lastName,
         language: form.language,
-        theme: form.theme?.code,
-        avatar: form.avatar,
+        theme: form.theme,
       };
 
-      this.setUser(await axios.patch('/api/accounts/user/', data));
+      // @ts-ignore
+      if (form.avatar instanceof Blob) data.avatar = form.avatar;
+
+      await axios.put(
+        this.user?.url || '/api/accounts/user/',
+        data,
+        {
+          headers: {
+            'content-type': 'multipart/form-data',
+          },
+        },
+      );
+      await this.GetUser();
     },
 
     setKey(key: string) {
@@ -64,13 +72,13 @@ const useUserStore = defineStore({
     setUser(payload: UserAPIResponse) {
       this.user = {
         username: payload.username,
+        email: payload.email,
         firstName: payload.first_name,
         lastName: payload.last_name,
         avatar: payload.avatar,
-        theme: {
-          code: payload.theme,
-        },
+        theme: payload.theme,
         language: payload.language,
+        url: payload.url,
       };
     },
   },

@@ -1,11 +1,10 @@
 export interface User {
   username?: string
   email?: string
-  firstName: string
-  lastName: string
+  firstName?: string
+  lastName?: string
   language?: string
-  theme?: {
-    code: string
-  },
+  theme?: string
   avatar?: string
+  url?: string
 }
