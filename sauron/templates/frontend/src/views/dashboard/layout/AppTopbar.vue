@@ -67,10 +67,13 @@ async function handleSubmit() {
         </router-link>
       </li>
       <li>
-        <Button @click="handleSubmit" class="p-link layout-topbar-button">
+        <button
+          type="button"
+          @click="handleSubmit"
+          class="p-link layout-topbar-button p-button-outlined">
           <i class="pi pi-sign-out" />
           <span>{{ $t('login.sign_out') }}</span>
-        </Button>
+        </button>
       </li>
     </ul>
   </form>

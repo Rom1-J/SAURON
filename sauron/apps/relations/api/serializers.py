@@ -22,5 +22,5 @@ class RelationSerializer(serializers.ModelSerializer[Relation]):
 class TagSerializer(serializers.ModelSerializer[Tag]):
     class Meta:
         model = Tag
-        fields = ["id", "note", "name", "color"]
-        read_only_fields = ["id"]
+        fields = ["id", "note", "name", "color", "uses"]
+        read_only_fields = ["id", "uses"]

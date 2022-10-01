@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 // eslint-disable-next-line import/no-unresolved
-import AddRelationDialog from '@/components/AddRelation/Dialog.vue';
+import AddRelationDialog from '@/components/AddRelation.vue';
 
 import { reactive } from 'vue';
 import { useI18n } from 'vue-i18n';

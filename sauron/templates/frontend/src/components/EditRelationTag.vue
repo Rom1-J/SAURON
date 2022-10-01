@@ -6,22 +6,27 @@ import RelationTag from '@/components/RelationTag.vue';
 import { reactive, ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
-import { useTagStore } from '@/stores';
 import { useVuelidate } from '@vuelidate/core';
+import { useTagStore } from '@/stores';
 import axios, { AxiosError } from 'axios';
 import { ServerError } from '@/types/server';
+import { Tag } from '@/models/tag.model';
 
 const tagStore = useTagStore();
 const toast = useToast();
 const { t } = useI18n();
 
 const submitted = ref(false);
-const dialogOpened = ref(false);
+const opened = ref(false);
+
+const props = defineProps<{
+  tag?: Tag
+}>();
 
 const state = reactive({
-  name: '',
-  color: '',
-  note: '',
+  name: props.tag?.name || '',
+  color: props.tag?.color || '',
+  note: props.tag?.note || '',
 });
 
 const rules = {
@@ -31,6 +36,17 @@ const rules = {
 };
 
 const v$ = useVuelidate(rules, state);
+
+function open() {
+  opened.value = true;
+}
+function close() {
+  opened.value = false;
+}
+
+defineExpose({
+  open, close,
+});
 
 async function handleSubmit(isFormValid: boolean) {
   if (!isFormValid) return;
@@ -44,7 +60,14 @@ async function handleSubmit(isFormValid: boolean) {
       detail: t('tag.success_creation'),
       life: 5000,
     });
-    await tagStore.GetTags();
+
+    await tagStore.FetchTags();
+
+    state.name = '';
+    state.note = '';
+    state.color = '';
+
+    close();
   } catch (error) {
     if (axios.isAxiosError(error)) {
       const serverError = error as AxiosError<ServerError>;
@@ -79,15 +102,14 @@ async function handleSubmit(isFormValid: boolean) {
 
 <template>
   <Dialog
-    :header="$t('misc.edit_tag')"
-    v-model:visible="dialogOpened"
+    v-model:visible="opened"
     :modal="true"
     content-class="flex-1">
     <template #header>
       <span class="p-dialog-title">
-        {{ $t('misc.edit_tag') }}
+        {{ $t('misc.add_edit_tag') }}
       </span>
-      <RelationTag v-if="state.name" :name="state.name" :color="state.color" :note="state.note" />
+      <RelationTag v-if="state.name" :tag="state" />
     </template>
 
     <form class="p-fluid formgrid grid">
@@ -99,7 +121,7 @@ async function handleSubmit(isFormValid: boolean) {
         </label>
 
         <InputText
-          v-model="v$.form.name.$model"
+          v-model="v$.name.$model"
           id="name"
           type="text"
           class="p-inputtext-sm"

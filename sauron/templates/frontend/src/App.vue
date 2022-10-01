@@ -13,5 +13,5 @@ const userStore = useUserStore();
   </component>
 
   <router-view />
-  <Toast />
+  <Toast position="top-left" />
 </template>

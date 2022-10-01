@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 // eslint-disable-next-line import/no-unresolved
-import TagEdit from '@/components/TagEdit.vue';
+import EditRelationTag from '@/components/EditRelationTag.vue';
 import { useTagStore } from '@/stores';
 import { ref } from 'vue';
 import { Tag } from '@/models/tag.model';
@@ -8,14 +8,12 @@ import { Tag } from '@/models/tag.model';
 const tagStore = useTagStore();
 
 const addDialogOpened = ref(false);
-const tagEditDialogOpened = ref(false);
+const editTagDialogOpened = ref(false);
 
 let tags: Tag[] = [];
-console.log(tags);
 
 const init = async () => {
-  if (tagStore.tags.length === 0) await tagStore.GetTags();
-  tags = tagStore.tags;
+  tags = await tagStore.FetchTags();
 };
 
 init();
@@ -35,9 +33,13 @@ init();
     class="h-full w-full m-5"
     :modal="true"
     content-class="flex-1">
-    <form class="p-fluid formgrid grid" />
-    <template #footer />
+    <form class="p-fluid formgrid grid">
+      {{ tags }}
+    </form>
+    <template #footer>
+      dza
+    </template>
   </Dialog>
 
-  <TagEdit v-if="tagEditDialogOpened" />
+  <EditRelationTag v-if="editTagDialogOpened" />
 </template>

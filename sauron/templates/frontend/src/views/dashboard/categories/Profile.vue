@@ -1,19 +1,25 @@
 <script lang="ts" setup>
-import { useVuelidate } from '@vuelidate/core';
-import { maxLength } from '@vuelidate/validators';
 import { reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useToast } from 'primevue/usetoast';
-import { useUserStore } from '@/stores';
+import { useConfirm } from 'primevue/useconfirm';
+import { useTagStore, useUserStore } from '@/stores';
 import axios, { AxiosError } from 'axios';
 import { ServerError } from '@/types/server';
+// eslint-disable-next-line import/no-unresolved
+import RelationTag from '@/components/RelationTag.vue';
+// eslint-disable-next-line import/no-unresolved
+import EditRelationTag from '@/components/EditRelationTag.vue';
 
 const userStore = useUserStore();
+const tagStore = useTagStore();
 const toast = useToast();
+const confirm = useConfirm();
 const { t } = useI18n();
 
-const submitted = ref(false);
 const avatarUrl = ref(userStore.user?.avatar);
+const createTagDialog = ref();
+const editTagDialog = ref({});
 
 const languageOptions = [
   { name: 'Francais', code: 'fr' },
@@ -32,21 +38,7 @@ const state = reactive({
   avatar: '',
 });
 
-const rules = {
-  firstName: {
-    maxLengthValue: maxLength(150),
-  },
-  lastName: {
-    maxLengthValue: maxLength(150),
-  },
-};
-
-const v$ = useVuelidate(rules, state);
-
-async function handleSubmit(isFormValid: boolean) {
-  if (!isFormValid) return;
-  submitted.value = true;
-
+async function handleSubmit() {
   try {
     await userStore.UpdateUser(state);
     toast.add({
@@ -76,13 +68,12 @@ async function handleSubmit(isFormValid: boolean) {
       }
     }
   }
-
-  submitted.value = false;
 }
 
 type UploaderEvent = {
   files: File[]
 };
+
 function uploader(event: UploaderEvent) {
   const file = event.files[0];
 
@@ -90,6 +81,38 @@ function uploader(event: UploaderEvent) {
   state.avatar = new File([file], file.name);
   avatarUrl.value = URL.createObjectURL(file);
 }
+
+function createTag() {
+  createTagDialog.value.open();
+}
+function editTag(id: number) {
+  console.log(editTagDialog.value);
+  editTagDialog.value[id].open();
+}
+
+function confirmDelete(event: PointerEvent, id: string) {
+  confirm.require({
+    target: event.currentTarget as HTMLElement | undefined,
+    message: t('action.delete_entry'),
+    icon: 'pi pi-info-circle',
+    acceptClass: 'p-button-danger',
+    accept: async () => {
+      await tagStore.DeleteTag(id);
+      toast.add({
+        severity: 'info',
+        summary: t('status.disconnection.title'),
+        detail: t('status.tag_deleted'),
+        life: 5000,
+      });
+    },
+  });
+}
+
+const init = async () => {
+  await tagStore.FetchTags();
+};
+
+init();
 </script>
 
 <template>
@@ -111,43 +134,25 @@ function uploader(event: UploaderEvent) {
           </div>
         </div>
         <form
-          @submit.prevent="handleSubmit(!v$.$invalid)"
+          @submit.prevent="handleSubmit()"
           class="p-fluid formgrid grid">
           <div class="field col-12 md:col-6">
-            <label
-              for="firstname"
-              :class="{ 'p-error': v$.firstName.$invalid && v$.firstName.$model }">
+            <label for="firstname">
               {{ $t('fields.firstname') }}
             </label>
             <InputText
-              v-model="v$.firstName.$model"
+              v-model="state.firstName"
               id="firstname"
-              :class="{ 'p-invalid': v$.firstName.$invalid && v$.firstName.$model }"
               type="text" />
-            <small
-              v-if="(v$.firstName.$invalid && v$.firstName.$model)
-                || v$.firstName.$pending.$response"
-              class="p-error">
-              {{ v$.firstName.maxLengthValue.$message }}
-            </small>
           </div>
           <div class="field col-12 md:col-6">
-            <label
-              for="lastname"
-              :class="{ 'p-error': v$.lastName.$invalid && v$.lastName.$model }">
+            <label for="lastname">
               {{ $t('fields.lastname') }}
             </label>
             <InputText
-              v-model="v$.lastName.$model"
+              v-model="state.lastName"
               id="lastname"
-              :class="{ 'p-invalid': v$.lastName.$invalid && v$.lastName.$model }"
               type="text" />
-            <small
-              v-if="(v$.lastName.$invalid && v$.lastName.$model)
-                || v$.lastName.$pending.$response"
-              class="p-error">
-              {{ v$.lastName.maxLengthValue.$message }}
-            </small>
           </div>
           <div class="field col-12 md:col-4">
             <label for="language">
@@ -191,9 +196,57 @@ function uploader(event: UploaderEvent) {
           </div>
 
           <div class="field col-12 mt-5">
-            <Button :label="$t('status.save')" :disabled="submitted || v$.$invalid" type="submit" />
+            <Button :label="$t('status.save')" type="submit" />
           </div>
         </form>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="card">
+        <div class="grid">
+          <div class="col-6 mb-4">
+            <span class="text-2xl mr-1">{{ $t('fields.tags') }}</span>
+            <i class="text-sm">({{ tagStore.tags.length }})</i>
+          </div>
+          <div class="col-6 flex justify-content-end">
+            <Button class="p-button-success" @click="createTag" icon="pi pi-plus" />
+            <EditRelationTag ref="createTagDialog" />
+          </div>
+        </div>
+
+        <DataTable
+          :value="tagStore.tags"
+          :loading="!tagStore.tags"
+          class="mt-3">
+          <Column>
+            <template #body="{ data }">
+              <RelationTag :tag="data" />
+            </template>
+          </Column>
+          <Column field="note" :header="$t('fields.tags.note')" />
+          <Column field="uses" :header="$t('fields.tags.uses')" />
+          <Column class="text-right">
+            <template #body="{ data }">
+              <span class="p-buttonset">
+                <Button
+                  icon="pi pi-pencil"
+                  class="p-button-info"
+                  @click="editTag(data.id)"
+                />
+                <Button
+                  @click="confirmDelete($event, data.id)"
+                  icon="pi pi-trash"
+                  class="p-button-danger" />
+                <ConfirmPopup />
+                <EditRelationTag :ref="`editTagDialog_${data.id}`" :tag="data" />
+              </span>
+            </template>
+          </Column>
+          <template #empty>
+            {{ t('fields.tags.empty') }}
+          </template>
+        </DataTable>
       </div>
     </div>
   </div>
