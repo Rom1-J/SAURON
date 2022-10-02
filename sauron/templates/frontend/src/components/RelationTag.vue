@@ -1,16 +1,17 @@
 <script lang="ts" setup>
 import { toRefs } from 'vue';
-import { Tag } from '@/models/tag.model';
 import { hexToRGB, hexToHSL } from '@/utils';
 import { useUserStore } from '@/stores';
 
 const userStore = useUserStore();
 
 const props = defineProps<{
-  tag: Tag
+  name: string
+  note?: string
+  color: string
 }>();
 
-const { name, color, note } = toRefs(props.tag);
+const { name, color, note } = toRefs(props);
 
 function getColorVariables() {
   const rgb = hexToRGB(color.value || '#000000');

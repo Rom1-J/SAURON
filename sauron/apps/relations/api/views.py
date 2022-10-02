@@ -8,6 +8,7 @@ from rest_framework.mixins import (
     DestroyModelMixin,
     ListModelMixin,
     RetrieveModelMixin,
+    UpdateModelMixin,
 )
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -58,6 +59,7 @@ class TagViewSet(
     CreateModelMixin,
     GenericViewSet,
     DestroyModelMixin,
+    UpdateModelMixin,
 ):
     serializer_class = TagSerializer
     permission_classes = [permissions.IsAuthenticated]

@@ -3,13 +3,14 @@ import { required } from '@vuelidate/validators';
 
 // eslint-disable-next-line import/no-unresolved
 import RelationTag from '@/components/RelationTag.vue';
-import { reactive, ref } from 'vue';
+import { reactive, ref, toRef } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import { useI18n } from 'vue-i18n';
 import { useVuelidate } from '@vuelidate/core';
 import { useTagStore } from '@/stores';
 import axios, { AxiosError } from 'axios';
 import { ServerError } from '@/types/server';
+import { TagUpdateForm } from '@/types/tag';
 import { Tag } from '@/models/tag.model';
 
 const tagStore = useTagStore();
@@ -19,15 +20,27 @@ const { t } = useI18n();
 const submitted = ref(false);
 const opened = ref(false);
 
-const props = defineProps<{
-  tag?: Tag
-}>();
+const props = withDefaults(defineProps<{
+  tag?: TagUpdateForm
+  edit?: boolean
+}>(), {
+  tag: () => ({
+    id: '',
+    name: '',
+    note: '',
+    color: '000000',
+  }),
+  edit: false,
+});
+
+const edit = toRef(props, 'edit');
+const tagData = toRef(props, 'tag');
 
 const state = reactive({
-  name: props.tag?.name || '',
-  color: props.tag?.color || '',
-  note: props.tag?.note || '',
-});
+  name: tagData.value?.name,
+  color: tagData.value?.color,
+  note: tagData.value?.note,
+}) as Tag;
 
 const rules = {
   name: {
@@ -37,6 +50,12 @@ const rules = {
 
 const v$ = useVuelidate(rules, state);
 
+function fillData(tag: Tag) {
+  state.id = tag.id;
+  state.name = tag.name;
+  state.note = tag.note;
+  state.color = tag.color;
+}
 function open() {
   opened.value = true;
 }
@@ -45,7 +64,7 @@ function close() {
 }
 
 defineExpose({
-  open, close,
+  fillData, open, close,
 });
 
 async function handleSubmit(isFormValid: boolean) {
@@ -53,11 +72,15 @@ async function handleSubmit(isFormValid: boolean) {
   submitted.value = true;
 
   try {
-    await tagStore.RegisterTag(state);
+    if (edit.value && props.tag) {
+      await tagStore.UpdateTag({ ...state, id: props.tag.id });
+    } else {
+      await tagStore.RegisterTag(state);
+    }
     toast.add({
       severity: 'info',
       summary: t('status.confirmation'),
-      detail: t('tag.success_creation'),
+      detail: edit.value ? t('tag.success_edition') : t('tag.success_creation'),
       life: 5000,
     });
 
@@ -107,9 +130,9 @@ async function handleSubmit(isFormValid: boolean) {
     content-class="flex-1">
     <template #header>
       <span class="p-dialog-title">
-        {{ $t('misc.add_edit_tag') }}
+        {{ edit ? $t('misc.edit_tag') : $t('misc.add_tag') }}
       </span>
-      <RelationTag v-if="state.name" :tag="state" />
+      <RelationTag v-if="state.name" :name="state.name" :note="state.note" :color="state.color" />
     </template>
 
     <form class="p-fluid formgrid grid">
@@ -147,7 +170,7 @@ async function handleSubmit(isFormValid: boolean) {
 
     <template #footer>
       <Button
-        :label="$t('fields.save_edit')"
+        :label="edit ? $t('fields.save') : $t('fields.create')"
         icon="pi pi-check"
         @click="handleSubmit(!v$.$invalid)"
         class="p-button-success"

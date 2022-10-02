@@ -1,6 +1,7 @@
 import { Tag } from '@/models/tag.model';
 import { defineStore } from 'pinia';
 import axios from 'axios';
+import { TagCreationForm, TagUpdateForm } from '@/types/tag';
 
 interface State {
   tags: Tag[],
@@ -13,8 +14,14 @@ const useTagStore = defineStore({
   }),
 
   actions: {
-    async RegisterTag(form: Tag): Promise<Tag[]> {
+    async RegisterTag(form: TagCreationForm): Promise<Tag[]> {
       await axios.post('/api/tags/', form);
+      await this.FetchTags();
+      return this.tags;
+    },
+
+    async UpdateTag(form: TagUpdateForm): Promise<Tag[]> {
+      await axios.patch(`/api/tags/${form.id}`, form);
       await this.FetchTags();
       return this.tags;
     },

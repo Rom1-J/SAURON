@@ -10,6 +10,8 @@ import { ServerError } from '@/types/server';
 import RelationTag from '@/components/RelationTag.vue';
 // eslint-disable-next-line import/no-unresolved
 import EditRelationTag from '@/components/EditRelationTag.vue';
+import { Tag } from '@/models/tag.model';
+import { storeToRefs } from 'pinia';
 
 const userStore = useUserStore();
 const tagStore = useTagStore();
@@ -18,8 +20,11 @@ const confirm = useConfirm();
 const { t } = useI18n();
 
 const avatarUrl = ref(userStore.user?.avatar);
+const { tags } = storeToRefs(tagStore);
+
 const createTagDialog = ref();
-const editTagDialog = ref({});
+const editTagDialog = ref();
+const editTagData = ref();
 
 const languageOptions = [
   { name: 'Francais', code: 'fr' },
@@ -85,9 +90,10 @@ function uploader(event: UploaderEvent) {
 function createTag() {
   createTagDialog.value.open();
 }
-function editTag(id: number) {
-  console.log(editTagDialog.value);
-  editTagDialog.value[id].open();
+function editTag(tag: Tag) {
+  editTagData.value = tag;
+  editTagDialog.value.fillData(tag);
+  editTagDialog.value.open();
 }
 
 function confirmDelete(event: PointerEvent, id: string) {
@@ -203,11 +209,12 @@ init();
     </div>
 
     <div class="col-12">
+      <EditRelationTag ref="editTagDialog" v-model:tag="editTagData" :edit="true" />
       <div class="card">
         <div class="grid">
           <div class="col-6 mb-4">
             <span class="text-2xl mr-1">{{ $t('fields.tags') }}</span>
-            <i class="text-sm">({{ tagStore.tags.length }})</i>
+            <i class="text-sm">({{ tags.length }})</i>
           </div>
           <div class="col-6 flex justify-content-end">
             <Button class="p-button-success" @click="createTag" icon="pi pi-plus" />
@@ -216,30 +223,34 @@ init();
         </div>
 
         <DataTable
-          :value="tagStore.tags"
-          :loading="!tagStore.tags"
+          :value="tags"
+          :loading="!tags"
+          dataKey="id"
+          :row-hover="true"
+          :rows="10"
+          :rowsPerPageOptions="[10, 50, 100]"
+          :paginator="true"
           class="mt-3">
-          <Column>
+          <Column field="name" :sortable="true" :header="$t('fields.tag')">
             <template #body="{ data }">
-              <RelationTag :tag="data" />
+              <RelationTag :name="data.name" :note="data.note" :color="data.color" />
             </template>
           </Column>
-          <Column field="note" :header="$t('fields.tags.note')" />
-          <Column field="uses" :header="$t('fields.tags.uses')" />
+          <Column field="note" :sortable="true" :header="$t('fields.tags.note')" />
+          <Column field="uses" :sortable="true" :header="$t('fields.tags.uses')" />
           <Column class="text-right">
             <template #body="{ data }">
               <span class="p-buttonset">
                 <Button
                   icon="pi pi-pencil"
                   class="p-button-info"
-                  @click="editTag(data.id)"
+                  @click="editTag(data)"
                 />
                 <Button
                   @click="confirmDelete($event, data.id)"
                   icon="pi pi-trash"
                   class="p-button-danger" />
                 <ConfirmPopup />
-                <EditRelationTag :ref="`editTagDialog_${data.id}`" :tag="data" />
               </span>
             </template>
           </Column>
