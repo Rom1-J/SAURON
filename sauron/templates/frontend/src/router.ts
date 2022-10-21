@@ -61,10 +61,16 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const user = useUserStore();
 
   if (to.matched.some((record) => record.meta.requires_auth)) {
+    try {
+      await user.GetUser();
+    } catch (AxiosError) {
+      user.$reset();
+    }
+
     if (!user.isAuthenticated) {
       return next({ name: 'login' });
     }
