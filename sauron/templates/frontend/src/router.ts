@@ -1,5 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import { useUserStore } from '@/stores';
+import { useTagStore, useUserStore } from '@/stores';
 
 const routes = [
   {
@@ -63,6 +63,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const user = useUserStore();
+  const tags = useTagStore();
 
   if (to.matched.some((record) => record.meta.requires_auth)) {
     try {
@@ -74,6 +75,8 @@ router.beforeEach(async (to, from, next) => {
     if (!user.isAuthenticated) {
       return next({ name: 'login' });
     }
+
+    await tags.GetTags();
   } else if (to.matched.some((record) => record.meta.requires_guest)) {
     if (user.isAuthenticated) {
       return next({ name: 'dashboard' });

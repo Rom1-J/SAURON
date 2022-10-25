@@ -38,13 +38,14 @@ const useTagStore = defineStore({
     },
 
     async GetTags(): Promise<Tag[]> {
-      return this.tags || await this.FetchTags();
+      return this.tags.length ? this.tags : this.FetchTags();
     },
 
     setTags(data: Tag[]) {
       this.tags = data;
     },
   },
+  persist: true,
 });
 
 export default useTagStore;

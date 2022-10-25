@@ -20,6 +20,7 @@ const addDialogOpened = ref(false);
     v-model:visible="addDialogOpened"
     class="h-full w-full m-5"
     :modal="true"
+    :draggable="false"
     content-class="flex-1">
     <form>
       <div class="flex">

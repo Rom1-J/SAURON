@@ -127,6 +127,7 @@ async function handleSubmit(isFormValid: boolean) {
   <Dialog
     v-model:visible="opened"
     :modal="true"
+    :draggable="false"
     content-class="flex-1">
     <template #header>
       <span class="p-dialog-title">
